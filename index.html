@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for HTML5 for Linux version 5.6.0">
+<meta charset="utf-8">
+<meta name="viewport" content=
+"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Phân tích và ứng dụng ngôn ngữ lập trình Rust cho hệ thống
+nhúng</title>
+<link rel="stylesheet" href="dist/reset.css">
+<link rel="stylesheet" href="dist/reveal.css">
+<link rel="stylesheet" href="dist/theme/solarized.css">
+<!-- Theme used for syntax highlighted code -->
+<link rel="stylesheet" href="plugin/highlight/solarized-dark.css"
+id="highlight-theme">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href=
+"https://fonts.googleapis.com/css2?family=Noto+Sans&amp;display=swap"
+rel="stylesheet">
+<style>
+.reveal,
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  font-family: "Noto Sans";
+  font-weight: bold;
+}
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  font-family: "Noto Sans";
+}
+.reveal p {
+  font-family: "Noto Sans";
+  font-weight: normal;
+}
+.reveal li {
+  font-family: "Noto Sans";
+  font-weight: normal;
+}
+.container{
+    display: flex;
+}
+.col{
+    flex: 1;
+}
+tt{
+    background-color: #eee8d5;
+    padding: 0 .1em;
+    border-radius: .2em;
+    font-family: 'Noto Sans Serif', monospace;
+}
+.reveal pre code{
+    font-family: 'Noto Sans Serif', monospace;
+    max-height: none;
+}
+.reveal pre ::selection{
+    color: #657b83;
+    background: #fdf6e3;
+}
+.wrap {
+    display: inline-block;
+    text-align: left;
+}
+</style>
+
+<style>
+    #tradeoffs-slide li {
+      margin: 1em;
+    }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<h2>Phân tích và ứng dụng</h2>
+<h2>ngôn ngữ lập trình Rust</h2>
+<h2>cho hệ thống nhúng</h2>
+<br>
+<h6>SVTH: Vũ Đăng Khoa - 1611645</h6>
+<h6>TP. Hồ Chí Minh, tháng 8/2021</h6>
+</section>
+<section>
+<h2>Nội dung</h2>
+<section style="text-align: left; margin-left: 300px">
+<p class="fragment">1) Giới thiệu về Rust</p>
+<p class="fragment">2) Những ý tưởng mới của Rust</p>
+<p class="fragment">3) Hệ sinh thái lập trình nhúng của Rust</p>
+<p class="fragment">4) Demo các kết quả đạt được</p>
+<p class="fragment">5) Kết luận và thảo luận</p>
+</section>
+</section>
+<section>
+<h2>Giới thiệu về Rust</h2>
+<img width="300" height="300" src=
+"assets/Rust_programming_language_black_logo.svg"></section>
+<section style="text-align: left; margin-left: 200px">
+<h3>Tổng quan về Rust</h3>
+<ul>
+<li>Sáng lập bởi Mozilla</li>
+<li>Ra mắt phiên bản 1.0 chính thức vào tháng 5/2015</li>
+<li>"Fast, reliable, productive - Pick three"</li>
+<li>"Fearless concurrency"</li>
+<li>Ngôn ngữ mã nguồn mở, phát triển nhờ cộng đồng</li>
+</ul>
+</section>
+<section style="text-align: left; margin-left: 200px">
+<h3>Các tính năng của của Rust</h3>
+<ul>
+<li>Compiled language (machine code)</li>
+<li>Strong static typing</li>
+<li>Không có Garbage Collector, minimal runtime</li>
+<li>Hệ thống kiểu hoàn chỉnh và công phu [*]</li>
+</ul>
+</section>
+<section style="text-align: left; margin-left: 200px">
+<h3>So sánh Rust với C/C++</h3>
+<ul>
+<li>"Memory safe"</li>
+<li>Không segmentation fault</li>
+<li>Không overflow/underflow</li>
+<li>Không null pointers</li>
+<li>Không datarace (vẫn có thể deadlock)</li>
+<li>Hệ thống kiểu tốt hơn</li>
+<li>Hệ thống quản lý Cargo hiện đại</li>
+</ul>
+</section>
+<section>
+<h3>Những ý tưởng mới của Rust</h3>
+<img width="300" height="300" src=
+"assets/rustacean-flat-happy.svg"></section>
+<section>
+<h2>Ý tưởng mới #1</h2>
+<br>
+Loại bỏ dangling pointers (*)<br>
+Các tham chiếu (references) bắt buộc luôn có hiệu lực</section>
+<section style="font-size: 1em">
+<h3>Dangling pointer</h3>
+<div class="container">
+<div class="col">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+                  const int *int_ptr;
+                  {
+                    int my_int = 2021;
+                    int_ptr = &my_int;
+                  }
+                  cout << *int_ptr;
+</script></code></pre></div>
+<div class="col">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+                    let int_ptr: &i32;
+                    {
+                        let my_int: i32 = 2021;
+                        int_ptr = &my_int;
+                    }
+                    dbg!(*int_ptr);
+</script></code></pre></div>
+</div>
+</section>
+<section style="font-size: 1em">
+<h2>C++</h2>
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+  const int *int_ptr;
+  {
+    int my_int = 2021;
+    int_ptr = &my_int;
+  }
+  cout << *int_ptr;
+</script></code></pre>
+<pre><code data-trim="">
+<script type="text/template">
+
+==9727==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ffff327ac90 at pc 0x5606d10672ef bp 0x7ffff327ac50 sp 0x7ffff327ac48
+READ of size 4 at 0x7ffff327ac90 thread T0
+    #0 0x5606d10672ee in main (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x12ee)
+    #1 0x7f1c2090b09a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2409a)
+    #2 0x5606d1067129 in _start (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x1129)
+</script></code></pre></section>
+<section style="font-size: 1em">
+<h3>Rust</h3>
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+    let int_ptr: &i32;
+    {
+        let my_int: i32 = 5;
+        int_ptr = &my_int;
+    }
+    dbg!(*int_ptr);
+</script></code></pre>
+<pre><code data-trim="">
+<script type="text/template">
+
+error[E0597]: `my_int` does not live long enough
+ --> src/main.rs:5:19
+  |
+5 |         int_ptr = &my_int;
+  |                   ^^^^^^^ borrowed value does not live long enough
+6 |     }
+  |     - `my_int` dropped here while still borrowed
+7 |     dbg!(*int_ptr);
+  |          -------- borrow later used here
+
+error: aborting due to previous error
+</script></code></pre></section>
+<section>
+<h2>Ý tưởng mới #2</h2>
+<br>
+Tham chiếu có thể thay đổi (mutable reference) luôn là độc
+nhất.<br>
+Không thể có mutable alias.</section>
+<section style="font-size: 1em">
+<h3>Mutable aliasing</h3>
+<div class="container">
+<div class="col">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+  int my_int = 2021;
+  int &reference1 = my_int;
+  int &reference2 = my_int;
+  reference1++;
+  reference2++;
+  assert(my_int == 2023);
+</script></code></pre>
+Code đúng và không có lỗi</div>
+<div class="col">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+    let mut my_int = 2021;
+    let reference1 = &mut my_int;
+    let reference2 = &mut my_int;
+    *reference1 += 1;
+    *reference2 += 1;
+    assert_eq!(my_int, 2023);
+</script></code></pre>
+Xảy ra lỗi khi biên dịch</div>
+</div>
+</section>
+<section style="font-size: 1em">
+<h3>Rust</h3>
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+    let mut my_int = 2021;
+    let reference1 = &mut my_int;
+    let reference2 = &mut my_int;
+    *reference1 += 1;
+    *reference2 += 1;
+    assert_eq!(my_int, 2023);
+</script></code></pre>
+<pre><code data-trim="">
+<script type="text/template">
+
+error[E0499]: cannot borrow `my_int` as mutable more than once at a time
+ --> src/main.rs:4:22
+  |
+3 |     let reference1 = &mut my_int;
+  |                      ----------- first mutable borrow occurs here
+4 |     let reference2 = &mut my_int;
+  |                      ^^^^^^^^^^^ second mutable borrow occurs here
+5 |     *reference1 += 1;
+  |     ---------------- first borrow later used here
+
+error: aborting due to previous error
+</script></code></pre></section>
+<section style="font-size: 1em">
+<h3>Lỗi ngăn chặn được</h3>
+<div class="container">
+<div class="col">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+void push_int_twice(vector<int> &v, const int &n) {
+  v.push_back(n);
+  v.push_back(n);
+}
+
+int main() {
+  vector<int> my_vector = {0};
+  const int &my_int_reference = my_vector[0];
+  push_int_twice(my_vector, my_int_reference);
+}
+</script></code></pre></div>
+<div class="col">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+fn push_int_twice(v: &mut Vec<i32>, n: &i32) {
+    v.push(*n);
+    v.push(*n);
+}
+
+fn main() {
+    let mut my_vector = vec![0];
+    let my_int_reference = &my_vector[0];
+    push_int_twice(&mut my_vector, my_int_reference);
+}
+</script></code></pre></div>
+</div>
+</section>
+<section style="font-size: 1em">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+void push_int_twice(vector<int> &v, const int &n) {
+  v.push_back(n);
+  v.push_back(n);
+}
+
+int main() {
+  vector<int> my_vector = {0};
+  const int &my_int_reference = my_vector[0];
+  push_int_twice(my_vector, my_int_reference);
+}
+</script></code></pre>
+<pre><code data-trim="">
+<script type="text/template">
+
+==14169==ERROR: AddressSanitizer: heap-use-after-free on address 0x602000000010 at pc 0x5613691d62ff bp 0x7ffda0a54770 sp 0x7ffda0a54768
+READ of size 4 at 0x602000000010 thread T0
+    #0 0x5613691d62fe in void __gnu_cxx::new_allocator<int>::construct<int, int const&>(int*, int const&) (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x22fe)
+    #1 0x5613691d5974 in void std::allocator_traits<std::allocator<int> >::construct<int, int const&>(std::allocator<int>&, int*, int const&) (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x1974)
+    #2 0x5613691d5cab in void std::vector<int, std::allocator<int> >::_M_realloc_insert<int const&>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, int const&) (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x1cab)
+    #3 0x5613691d566a in std::vector<int, std::allocator<int> >::push_back(int const&) (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x166a)
+    #4 0x5613691d52da in push_int_twice(std::vector<int, std::allocator<int> >&, int const&) (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x12da)
+    #5 0x5613691d540b in main (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x140b)
+    #6 0x7f93ea95909a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2409a)
+    #7 0x5613691d51e9 in _start (/home/rudo/Documents/luan-van-full/code_presentation/a.out+0x11e9)
+</script></code></pre></section>
+<section style="font-size: 1em">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+fn push_int_twice(v: &mut Vec<i32>, n: &i32) {
+    v.push(*n);
+    v.push(*n);
+}
+
+fn main() {
+    let mut my_vector = vec![0];
+    let my_int_reference = &my_vector[0];
+    push_int_twice(&mut my_vector, my_int_reference);
+}
+</script></code></pre>
+<pre style="width: 90%"><code data-trim="">
+<script type="text/template">
+
+error[E0502]: cannot borrow `my_vector` as mutable because it is also borrowed as immutable
+ --> src/main.rs:9:20
+  |
+8 |     let my_int_reference = &my_vector[0];
+  |                             --------- immutable borrow occurs here
+9 |     push_int_twice(&mut my_vector, my_int_reference);
+  |                    ^^^^^^^^^^^^^^  ---------------- immutable borrow later used here
+  |                    |
+  |                    mutable borrow occurs here
+
+error: aborting due to previous error
+</script></code></pre></section>
+<section>
+<h2>Ý tưởng mới #3</h2>
+<br>
+Thay đổi dữ liệu có kiểu không có thuộc tính <tt>Copy</tt> đều là
+<tt>move</tt>.<br>
+<tt>move</tt> là <u>destructive bitwise copy</u>.<br>
+Tất cả các loại data đều có thể <tt>move</tt>.</section>
+<section style="font-size: 1em">
+<h3>Move một chuỗi (string)</h3>
+<div class="container">
+<div class="col">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+    string s1 = "abcdefghijklmnopqrstuvwxyz";
+    string s2 = move(s1);
+    vector<string> v;
+    v.push_back(move(s2));
+</script></code></pre>
+một string allocation<br>
+<u>ba</u> string destructors</div>
+<div class="col">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+        let s1 = "abcdefghijklmnopqrstuvwxyz".to_string();
+        let s2 = s1;
+        let mut v = Vec::new();
+        v.push(s2);
+</script></code></pre>
+một string allocation<br>
+<u>một</u> string destructor</div>
+</div>
+</section>
+<section style="font-size: 1em">
+<h3>Đọc dữ liệu đã bị <tt>move</tt></h3>
+<div class="container">
+<div class="col">C++
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+    string s1 = "abcdefghijklmnopqrstuvwxyz";
+    string s2 = move(s1);
+    cout << s1;
+</script></code></pre>
+Kết quả<br>
+<tt>s1 == ""</tt></div>
+<div class="col">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+        let s1 = "abcdefghijklmnopqrstuvwxyz".to_string();
+        let s2 = s1;
+        dbg!(s1);
+</script></code></pre></div>
+</div>
+</section>
+<section style="font-size: 1em">Rust
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+        let s1 = "abcdefghijklmnopqrstuvwxyz".to_string();
+        let s2 = s1;
+        dbg!(s1);
+</script></code></pre>
+<pre style="width: 90%"><code data-trim="">
+<script type="text/template">
+
+error[E0382]: use of moved value: `s1`
+ --> src/main.rs:4:10
+  |
+2 |     let s1 = "abcdefghijklmnopqrstuvwxyz".to_string();
+  |         -- move occurs because `s1` has type `String`, which does not implement the `Copy` trait
+3 |     let s2 = s1;
+  |              -- value moved here
+4 |     dbg!(s1);
+  |          ^^ value used here after move
+</script></code></pre></section>
+<section id="tradeoffs-slide" style="font-size: 1.0em">
+<h2>Tradeoffs</h2>
+<div class="container">
+<div class="col">
+<h3>C++</h3>
+<ul>
+<li><strong>Các kiểu thuộc loại immovable có được hỗ
+trợ</strong></li>
+<ul>
+<li><tt>Mutex</tt> trong C++ không cần heap allocation.
+<tt>Mutex</tt> của Rust cần phải có heap allocation.</li>
+</ul>
+</ul>
+</div>
+<div class="col">
+<h3>Rust</h3>
+<ul>
+<li><strong>Tất cả loại dữ liệu đều có thể
+<tt>move</tt></strong></li>
+<ul>
+<li><tt>Vec</tt> trong Rust có thể lớn lên hay thay đổi giá trị sử
+dụng <tt>memmove</tt>.</li>
+</ul>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<h2>Hệ sinh thái nhúng của Rust</h2>
+<img width="300" height="300" src=
+"assets/embedded-rust.png"></section>
+<section>
+<h3>Điều khiển một vi điều khiển</h3>
+<ul>
+<li>Thông qua các register trên vi điều khiển</li>
+<li>Các register này thường là memory mapped</li>
+<li>Các thông số register có thể lấy được từ datasheet</li>
+</ul>
+</section>
+<section style="font-size: 1em">
+<h3>Điều khiển thông qua register</h3>
+C++
+<div class="container">
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+#include "TM4C123GH6PM.h"
+SYSCTL->RCGCGPIO |= 0x20; // kich hoat clock cho GPIOF
+GPIOF->LOCK = 0x4C4F434B; // unlockGPIOCR register
+</script></code></pre></div>
+</section>
+<section style="font-size: 1em">Rust
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+const GPIO_START: usize = 0x4001_1000;
+const CRH_OFFSET: usize = 0x04;
+const OUTPUT_MODE: u32 = 0b01;
+const PUSH_PULL: u32 = 0b10;
+
+unsafe {
+    *((GPIOC_START + CRH_OFFSET) as *mut u32) = (OUTPUT_MODE << 20) | (PUSH_PULL << 22);
+}
+</script></code></pre></div>
+</section>
+<section>
+<h3>Sử dụng register để điều khiển</h3>
+<ul>
+<li>Rất khó viết</li>
+<li>Rất dễ bị sai, lỗi</li>
+<li>Phải đọc datasheet để lấy các số liệu register</li>
+</ul>
+</section>
+<section>
+<h3>Giải quyết vấn đề register (C++)</h3>
+Các thư viện abstract được cung cấp sẵn bởi nhà sản xuất vi điều
+khiển (như TivaWare).
+<div class="container">
+<pre class="cpp"><code data-trim="">
+<script type="text/template">
+
+void setup_GPIOs()
+{
+     delay_ms(2000);
+     GPIO_Clk_Enable(&GPIO_PORTF);
+     GPIO_Config(&GPIO_PORTF,
+                 (_GPIO_PINMASK_1 | _GPIO_PINMASK_2 | _GPIO_PINMASK_3),
+                 _GPIO_DIR_OUTPUT,
+                 (_GPIO_CFG_DIGITAL_ENABLE | _GPIO_CFG_DRIVE_8mA),
+                 _GPIO_PINCODE_NONE);
+}
+</script></code></pre></div>
+</section>
+<section>
+<h3>Giải quyết vấn đề register (Rust)</h3>
+<section style="text-align: left; margin-left: 300px">
+<p class="fragment">1) Peripheral Access Crate (PAC)</p>
+<p class="fragment">2) Hardware Abstraction Layer (HAL)</p>
+<p class="fragment">3) Driver crate</p>
+<p class="fragment">4) Embedded HAL</p>
+<p class="fragment">5) no-std crates</p>
+<p class="fragment">6) Board Support Crate</p>
+</section>
+</section>
+<section>
+<h3>Peripheral Access Crate (PAC)</h3>
+<ul>
+<li>Bắt nguồn từ file SVD</li>
+<li>PAC được <u>tự động</u> tạo ra bởi <tt>svd2rust</tt></li>
+<li>Kết quả đạt được là một thư viện tương đối an toàn và dễ sử
+dụng hơn</li>
+<li>Được hưởng lợi từ hệ thống ownership của Rust</li>
+</ul>
+</section>
+<section>
+<h3>Code sử dụng PAC</h3>
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+startup_gpio();
+dp.GPIOC.crh.modify(|_r, w| {
+    w.mode13().output()
+     .cnf13().push_pull()
+});
+</script></code></pre></div>
+</section>
+<section>
+<h3>Hardware Abstraction Layer (HAL)</h3>
+HAL là một interface cấp cao hơn, được viết dựa vào PAC và
+datasheet.
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+pub fn unsigned(&self, dividend: u32, divisor: u32) -> DivResult<u32> {
+        let sio = unsafe { &(*pac::SIO::ptr()) };
+        sio.div_udividend.write(|w| unsafe { w.bits(dividend) });
+
+        sio.div_udivisor.write(|w| unsafe { w.bits(divisor) });
+
+        cortex_m::asm::delay(8);
+
+        // Note: quotient must be read last
+        let remainder = sio.div_remainder.read().bits();
+        let quotient = sio.div_quotient.read().bits();
+
+        DivResult {
+            remainder,
+            quotient,
+        }
+}
+</script></code></pre></div>
+</section>
+<section>
+<h3>Code sử dụng HAL</h3>
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+let sio = Sio::new(pac.SIO);
+let hwdivider = sio.hwdivider;
+let result = hwdivider.unsigned(10,2);
+</script></code></pre></div>
+<br>
+<ul>
+<li>An toàn</li>
+<li>Dễ sử dụng</li>
+<li>Trường hợp đơn giản có thể không cần đọc datasheet!</li>
+</ul>
+</section>
+<section>
+<h3>HAL cho các thiết bị ngoài</h3>
+<img width="300" height="300" src="assets/aht20.png">
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+let mut dev = Aht20::new(i2c, hal::Delay).unwrap();
+let (h, t) = dev.read().unwrap(); // h = humidity, t = temperature
+</script></code></pre></div>
+</section>
+<section>
+<h3>Một số vấn đề với PAC và HAL</h3>
+<ul>
+<li>Không được cung cấp bởi nhà sản xuất</li>
+<li>HAL được viết thủ công</li>
+<li>Chất lượng các HAL tùy thuộc vào người viết</li>
+<li>
+<p class="fragment highlight-red">Các HAL không tương thích với
+nhau</p>
+</li>
+<li>
+<p class="fragment highlight-red">Các HAL driver cho thiết bị ngoài
+phải được viết cho từng HAL vi điều khiển khác nhau</p>
+</li>
+</ul>
+</section>
+<section>
+<h3>Embedded HAL</h3>
+<ul>
+<li>Thuộc tính chung, phổ biến: GPIO, Timer, SPI, UART, v.v..</li>
+<li>Embedded HAL định nghĩa các thuộc tính này</li>
+<li>HAL của vi điều khiển và HAL của driver thực hiện viết HAL sử
+dụng các thuộc tính chung này</li>
+</ul>
+<p class="fragment fade-up">Kết quả: Toàn bộ các HAL đều tương
+thích với nhau</p>
+</section>
+<section>
+<h3>Ví dụ về Embedded HAL</h3>
+HAL driver cho AHT20 tái sử dụng hai thuộc tính định nghĩa sẵn từ
+Embedded HAL là <tt>delay</tt> và <tt>i2c</tt>
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+use embedded_hal::blocking::{delay::DelayMs, i2c::{Write, WriteRead}};
+pub fn new(i2c: I2C, delay: D) -> Result<Self, Error<E>> {
+...
+}
+</script></code></pre></div>
+</section>
+<section>
+<h3>no-std crates</h3>
+<div class="container">
+<pre class="rust"><code data-trim="" data-line-numbers="|2">
+<script type="text/template">
+
+#![doc(html_root_url = "https://docs.rs/hex/0.4.3")]
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
+#![allow(clippy::unreadable_literal)]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+#[cfg(feature = "alloc")]
+use alloc::{string::String, vec::Vec};
+use core::iter;
+</script></code></pre></div>
+</section>
+<section>
+<h3>Board Support Crate</h3>
+Vi điều khiển phổ biến như STM32F4DISCOVERY được viết thêm 1 lớp
+abstraction cao hơn HAL riêng cho các vi điều khiển này
+<tt>stm32f407g-disc</tt>.
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+
+fn main() -> ! {
+    if let (Some(p), Some(cp)) = (stm32::Peripherals::take(), Peripherals::take()) {
+        let gpiod = p.GPIOD.split();
+        // Initialize on-board LEDs
+        let mut leds = Leds::new(gpiod);
+        // Constrain clock registers
+        let rcc = p.RCC.constrain();
+        // Configure clock to 168 MHz (i.e. the maximum) and freeze it
+        let clocks = rcc.cfgr.sysclk(168.mhz()).freeze();
+        // Get delay provider
+        let mut delay = Delay::new(cp.SYST, clocks);
+        loop {
+            leds[LedColor::Red].on();
+            delay.delay_ms(500_u16);
+            leds[LedColor::Red].off();
+
+            leds[LedColor::Blue].on();
+            delay.delay_ms(500_u16);
+            leds[LedColor::Blue].off();
+        }
+    }
+}
+</script></code></pre></div>
+</section>
+<section>
+<h2>Ứng dụng Rust</h2>
+</section>
+<section>
+<h2>EK-TM4C123GH6PM</h2>
+<img src="assets/kit_tivac.jpg"></section>
+<section>
+<h3>Demo các kết quả đạt được</h3>
+<section style="text-align: left; margin-left: 200px">
+<p class="fragment">1) Chương trình nháy LED</p>
+<p class="fragment">2) Sử dụng các ngoại vi đơn giản</p>
+<p class="fragment">3) Tương tác với một vài thiết bị ngoài</p>
+<p class="fragment">4) Sử dụng crate no-std thực hiện giải thuật cờ
+vua trên kit</p>
+<p class="fragment">5) Sử dụng crate RTIC thực hiện hệ thống real
+time sử dụng ngắt</p>
+</section>
+</section>
+<section>
+<h3>LED Blinky</h3>
+<div class="container">
+<pre class="rust"><code data-trim="">
+<script type="text/template">
+#![no_std]
+#![no_main]
+// ... imports
+pub fn stellaris_main(mut board: stellaris_launchpad::board::Board) {
+    let mut delay = tm4c123x_hal::delay::Delay::new(
+        board.core_peripherals.SYST,
+        stellaris_launchpad::board::clocks(),
+    );
+    loop {
+        board.led_red.set_high().unwrap();
+        delay.delay_ms(500u32);
+        board.led_red.set_low().unwrap();
+        delay.delay_ms(500u32);
+    }
+}
+</script></code></pre></div>
+</section>
+<section>
+<h3>Tương tác ngoại vi trên kit</h3>
+<div class="container">
+<div class="col">
+<img src="assets/cycle_kit.jpg">
+</div>
+<div class="col">
+<img src="assets/cycle_uart_read.png">
+</div>
+</div>
+</section>
+<section>
+<h3>Tương tác một số thiết bị ngoài</h3>
+<div class="container">
+<div class="col">
+<img src="assets/mfrc522_default.jpg">
+</div>
+<div class="col">
+<img src="assets/mfrc522_student.jpg">
+</div>
+</div>
+</section>
+<section>
+<h3>Giải thuật cờ vua đơn giản</h3>
+<div class="container">
+<div class="col">
+<img src="assets/chess_start.png">
+</div>
+<div class="col">
+<img src="assets/chess_moves.png">
+</div>
+</div>
+</section>
+<section>
+<div class="container">
+<div class="col">
+<img src="assets/chess_init.jpg">
+</div>
+<div class="col">
+<img src="assets/chess_c4c6.jpg">
+</div>
+</div>
+</section>
+<section>
+<div class="container">
+<div class="col">
+<img src="assets/chess_wait_move2.jpg">
+</div>
+<div class="col">
+<img src="assets/chess_g1h2.jpg">
+</div>
+</div>
+</section>
+<section>
+<div class="container">
+<div class="col">
+<img src="assets/chess_end.jpg">
+</div>
+<div class="col">
+<img src="assets/chess_illegal.jpg">
+</div>
+</div>
+</section>
+<section>
+<h2>Kết luận</h2>
+<ul>
+<li>Rust đạt được các tiêu chí đề ra ban đầu và hơn thế</li>
+<li>Rust ngày càng được sử dụng nhiều hơn trong các công ty, tập
+đoàn lớn (Google, Microsoft, Amazon, v.v..)</li>
+<li>Hệ sinh thái nhúng của Rust còn non nớt nhưng đủ để thực hiện
+một số hệ thống từ đơn giản đến phức tạp</li>
+</ul>
+</section>
+<section>
+<h2>Thảo luận</h2>
+</section>
+<section>
+<h2>Cảm ơn!</h2>
+</section>
+</div>
+</div>
+<script src="dist/reveal.js"></script> 
+<script src="plugin/notes/notes.js"></script> 
+<script src="plugin/markdown/markdown.js"></script> 
+<script src="plugin/highlight/highlight.js"></script> 
+<script>
+
+                        // More info about initialization & config:
+                        // - https://revealjs.com/initialization/
+                        // - https://revealjs.com/config/
+                        Reveal.initialize({
+                                hash: true,
+                width: "100%",
+                height: "100%",
+                margin: 0,
+
+                transition: "none",
+                                // Learn about plugins: https://revealjs.com/plugins/
+                                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+                        });
+</script>
+</body>
+</html>
