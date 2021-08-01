@@ -79,12 +79,27 @@ tt{
 <h2>ngôn ngữ lập trình Rust</h2>
 <h2>cho hệ thống nhúng</h2>
 <br>
-<h6>SVTH: Vũ Đăng Khoa - 1611645</h6>
+<h6>Vũ Đăng Khoa - 1611645</h6>
+<h6>GVHD: TS. Trương Quang Vinh</h6>
+<br>
 <h6>TP. Hồ Chí Minh, tháng 8/2021</h6>
 </section>
 <section>
-<h2>Nội dung</h2>
-<section style="text-align: left; margin-left: 300px">
+<p style="margin-top: 50px">
+<h3>Nhiệm vụ đề tài</h3>
+</p>
+<section style="text-align: left; margin-left: 100px">
+<p class="fragment">1) Tìm hiểu về ngôn ngữ lập trình Rust</p>
+<p class="fragment">2) Phân tích điểm mạnh, yếu của Rust</p>
+<p class="fragment">3) Phân tích cách sử dụng Rust cho hệ thống nhúng</p>
+<p class="fragment">4) Thực hiện ứng dụng Rust trên hệ thống nhúng thực tế</p>
+</section>
+</section>
+<section>
+<p style="margin-top: 50px">
+<h3>Nội dung</h3>
+</p>
+<section style="text-align: left; margin-left: 100px">
 <p class="fragment">1) Giới thiệu về Rust</p>
 <p class="fragment">2) Những ý tưởng mới của Rust</p>
 <p class="fragment">3) Hệ sinh thái lập trình nhúng của Rust</p>
@@ -93,10 +108,10 @@ tt{
 </section>
 </section>
 <section>
-<h2>Giới thiệu về Rust</h2>
+<h3>Giới thiệu về Rust</h3>
 <img width="300" height="300" src=
 "assets/Rust_programming_language_black_logo.svg"></section>
-<section style="text-align: left; margin-left: 200px">
+<section style="text-align: left; margin-left: 100px">
 <h3>Tổng quan về Rust</h3>
 <ul>
 <li>Sáng lập bởi Mozilla</li>
@@ -106,7 +121,7 @@ tt{
 <li>Ngôn ngữ mã nguồn mở, phát triển nhờ cộng đồng</li>
 </ul>
 </section>
-<section style="text-align: left; margin-left: 200px">
+<section style="text-align: left; margin-left: 100px">
 <h3>Các tính năng của của Rust</h3>
 <ul>
 <li>Compiled language (machine code)</li>
@@ -115,14 +130,14 @@ tt{
 <li>Hệ thống kiểu hoàn chỉnh và công phu [*]</li>
 </ul>
 </section>
-<section style="text-align: left; margin-left: 200px">
+<section style="text-align: left; margin-left: 100px">
 <h3>So sánh Rust với C/C++</h3>
 <ul>
 <li>"Memory safe"</li>
 <li>Không segmentation fault</li>
 <li>Không overflow/underflow</li>
 <li>Không null pointers</li>
-<li>Không datarace (vẫn có thể deadlock)</li>
+<li>Không datarace</li>
 <li>Hệ thống kiểu tốt hơn</li>
 <li>Hệ thống quản lý Cargo hiện đại</li>
 </ul>
@@ -132,7 +147,7 @@ tt{
 <img width="300" height="300" src=
 "assets/rustacean-flat-happy.svg"></section>
 <section>
-<h2>Ý tưởng mới #1</h2>
+<h3>Ý tưởng mới #1</h3>
 <br>
 Loại bỏ dangling pointers (*)<br>
 Các tham chiếu (references) bắt buộc luôn có hiệu lực</section>
@@ -164,7 +179,7 @@ Các tham chiếu (references) bắt buộc luôn có hiệu lực</section>
 </div>
 </section>
 <section style="font-size: 1em">
-<h2>C++</h2>
+<h3>C++</h3>
 <pre class="cpp"><code data-trim="">
 <script type="text/template">
 
@@ -212,7 +227,7 @@ error[E0597]: `my_int` does not live long enough
 error: aborting due to previous error
 </script></code></pre></section>
 <section>
-<h2>Ý tưởng mới #2</h2>
+<h3>Ý tưởng mới #2</h3>
 <br>
 Tham chiếu có thể thay đổi (mutable reference) luôn là độc
 nhất.<br>
@@ -368,7 +383,7 @@ error[E0502]: cannot borrow `my_vector` as mutable because it is also borrowed a
 error: aborting due to previous error
 </script></code></pre></section>
 <section>
-<h2>Ý tưởng mới #3</h2>
+<h3>Ý tưởng mới #3</h3>
 <br>
 Thay đổi dữ liệu có kiểu không có thuộc tính <tt>Copy</tt> đều là
 <tt>move</tt>.<br>
@@ -446,7 +461,7 @@ error[E0382]: use of moved value: `s1`
   |          ^^ value used here after move
 </script></code></pre></section>
 <section id="tradeoffs-slide" style="font-size: 1.0em">
-<h2>Tradeoffs</h2>
+<h3>Tradeoffs</h3>
 <div class="container">
 <div class="col">
 <h3>C++</h3>
@@ -467,13 +482,14 @@ trợ</strong></li>
 <ul>
 <li><tt>Vec</tt> trong Rust có thể lớn lên hay thay đổi giá trị sử
 dụng <tt>memmove</tt>.</li>
+<li>LLVM có thể sử dụng <tt>noalias</tt> để tối ưu hóa code, tốc độ nhanh hơn 3-5% so với C/C++</li>
 </ul>
 </ul>
 </div>
 </div>
 </section>
 <section>
-<h2>Hệ sinh thái nhúng của Rust</h2>
+<h3>Hệ sinh thái nhúng của Rust</h3>
 <img width="300" height="300" src=
 "assets/embedded-rust.png"></section>
 <section>
@@ -521,8 +537,9 @@ unsafe {
 </section>
 <section>
 <h3>Giải quyết vấn đề register (C++)</h3>
-Các thư viện abstract được cung cấp sẵn bởi nhà sản xuất vi điều
-khiển (như TivaWare).
+<p style="margin-left: 100px; margin-right: 100px">
+Các thư viện abstract được cung cấp sẵn bởi nhà sản xuất vi điều khiển (như TivaWare).
+</p>
 <div class="container">
 <pre class="cpp"><code data-trim="">
 <script type="text/template">
@@ -540,8 +557,10 @@ void setup_GPIOs()
 </script></code></pre></div>
 </section>
 <section>
+<p style="margin-top: 100px">
 <h3>Giải quyết vấn đề register (Rust)</h3>
-<section style="text-align: left; margin-left: 300px">
+</p>
+<section style="text-align: left; margin-left: 100px">
 <p class="fragment">1) Peripheral Access Crate (PAC)</p>
 <p class="fragment">2) Hardware Abstraction Layer (HAL)</p>
 <p class="fragment">3) Driver crate</p>
@@ -721,14 +740,16 @@ fn main() -> ! {
 </script></code></pre></div>
 </section>
 <section>
-<h2>Ứng dụng Rust</h2>
+<h3>Ứng dụng Rust</h3>
 </section>
 <section>
-<h2>EK-TM4C123GH6PM</h2>
+<h3>EK-TM4C123GH6PM</h3>
 <img src="assets/kit_tivac.jpg"></section>
 <section>
+<p style="margin-top: 100px">
 <h3>Demo các kết quả đạt được</h3>
-<section style="text-align: left; margin-left: 200px">
+</p>
+<section style="text-align: left; margin-left: 100px">
 <p class="fragment">1) Chương trình nháy LED</p>
 <p class="fragment">2) Sử dụng các ngoại vi đơn giản</p>
 <p class="fragment">3) Tương tác với một vài thiết bị ngoài</p>
@@ -824,7 +845,7 @@ pub fn stellaris_main(mut board: stellaris_launchpad::board::Board) {
 </div>
 </section>
 <section>
-<h2>Kết luận</h2>
+<h3>Kết luận</h3>
 <ul>
 <li>Rust đạt được các tiêu chí đề ra ban đầu và hơn thế</li>
 <li>Rust ngày càng được sử dụng nhiều hơn trong các công ty, tập
@@ -834,10 +855,10 @@ một số hệ thống từ đơn giản đến phức tạp</li>
 </ul>
 </section>
 <section>
-<h2>Thảo luận</h2>
+<h3>Thảo luận</h3>
 </section>
 <section>
-<h2>Cảm ơn!</h2>
+<h3>Cảm ơn quý thầy cô đã lắng nghe!</h3>
 </section>
 </div>
 </div>
