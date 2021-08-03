@@ -531,8 +531,7 @@ unsafe {
 <section>
 <h3>Sử dụng register để điều khiển</h3>
 <ul>
-<li>Rất khó viết</li>
-<li>Rất khó viết</li>
+<li>Rất khó viết, khó hiểu</li>
 <li>Dễ bị sai, lỗi</li>
 <li>Cực kỳ thiếu an toàn</li>
 <li>Phải đọc datasheet để lấy các số liệu register</li>
@@ -846,6 +845,25 @@ pub fn stellaris_main(mut board: stellaris_launchpad::board::Board) {
 <img src="assets/chess_illegal.jpg">
 </div>
 </div>
+</section>
+<section>
+<h3>Hệ thống RTIC</h3>
+<ul>
+<li>Real-Time Interrupt-driven Concurrency</li>
+<li>SW 1: nháy LED</li>
+<li>SW 2: sau mỗi 0.5s tăng biến counter và xuất ra LCD</li>
+<li>SW 3: sau mỗi 2s xuất các giá trị hệ thống qua UART</li>
+<li>HW 1: ngắt và đọc dữ liệu truyền từ máy tính qua UART</li>
+<li>HW 2: ngắt và đọc dữ liệu thẻ RFID, xuất ra LCD</li>
+</ul>
+</section>
+<section>
+<h3>Một số khó khăn</h3>
+<ul>
+<li>Nhiều tính năng Rust còn chưa được ổn định</li>
+<li>HAL và các thư viện no-std còn nhiều thiếu sót</li>
+<li>RTIC có cách quản lý hệ thống khác với hệ thống RTOS quen thuộc gây hiểu lầm trong quá trình thực hiện</li>
+</ul>
 </section>
 <section>
 <h3>Kết luận</h3>
